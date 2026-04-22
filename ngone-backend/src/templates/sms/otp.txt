@@ -1,0 +1,1 @@
+Your NGone OTP is {{otp}}. Valid for 5 mins. Do not share this code with anyone. -NGONE

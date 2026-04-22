@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crisis Alert</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f7;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f4f4f7;">
+    <tr>
+      <td align="center" style="padding:40px 0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#DC2626,#EF4444);padding:32px 40px;text-align:center;">
+              <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:700;">🆘 CRISIS ALERT</h1>
+              <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:13px;">NG😊NE — URGENT VOLUNTEER REQUEST</p>
+            </td>
+          </tr>
+          <!-- Urgency Badge -->
+          <tr>
+            <td style="padding:0;">
+              <div style="background-color:#FEF2F2;padding:12px;text-align:center;border-bottom:2px solid #FEE2E2;">
+                <span style="display:inline-block;background-color:#DC2626;color:#ffffff;padding:4px 16px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:1px;">URGENCY: {{urgency}}</span>
+              </div>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px;">
+              <h2 style="margin:0 0 8px;color:#1a1a2e;font-size:22px;">{{crisisTitle}}</h2>
+              <p style="margin:0 0 20px;color:#4a4a68;font-size:16px;line-height:1.6;">
+                Hi <strong>{{name}}</strong>, volunteers are urgently needed for a crisis near you. Your skills match this emergency.
+              </p>
+              <!-- Crisis Details -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#FFF5F0;border-radius:12px;overflow:hidden;margin:0 0 24px;">
+                <tr>
+                  <td style="padding:16px 24px;border-bottom:1px solid #FFE0D0;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="color:#9b9bb4;font-size:13px;">📍 Location</td>
+                        <td align="right" style="color:#1a1a2e;font-size:14px;font-weight:600;">{{location}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 24px;border-bottom:1px solid #FFE0D0;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="color:#9b9bb4;font-size:13px;">📏 Distance from you</td>
+                        <td align="right" style="color:#FF6B35;font-size:14px;font-weight:600;">{{distance}} km</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 24px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="color:#9b9bb4;font-size:13px;">⚠️ Urgency</td>
+                        <td align="right" style="color:#DC2626;font-size:14px;font-weight:700;">{{urgency}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto;">
+                <tr>
+                  <td style="background:linear-gradient(135deg,#DC2626,#EF4444);border-radius:8px;">
+                    <a href="{{clientUrl}}/crises/{{crisisId}}" style="display:inline-block;padding:14px 40px;color:#ffffff;text-decoration:none;font-weight:600;font-size:16px;">Respond Now →</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 40px;background-color:#f8f8fa;border-top:1px solid #eee;">
+              <p style="margin:0 0 8px;color:#9b9bb4;font-size:12px;text-align:center;">
+                NG😊NE Foundation | DARPAN ID: UP/2024/0123456 | 80G & 12A Certified
+              </p>
+              <p style="margin:0;color:#9b9bb4;font-size:11px;text-align:center;">
+                <a href="{{clientUrl}}/unsubscribe" style="color:#FF6B35;text-decoration:underline;">Unsubscribe from crisis alerts</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

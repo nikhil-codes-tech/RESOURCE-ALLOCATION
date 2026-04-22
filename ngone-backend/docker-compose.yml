@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: ngone-api
+    ports:
+      - "5000:5000"
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://ngone:password@postgres:5432/ngone_db
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - ngone-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: ngone-postgres
+    environment:
+      POSTGRES_DB: ngone_db
+      POSTGRES_USER: ngone
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ngone -d ngone_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - ngone-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: ngone-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redisdata:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - ngone-network
+
+volumes:
+  pgdata:
+    driver: local
+  redisdata:
+    driver: local
+
+networks:
+  ngone-network:
+    driver: bridge

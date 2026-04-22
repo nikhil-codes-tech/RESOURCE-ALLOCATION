@@ -1,0 +1,1 @@
+You've been invited to join "{{taskName}}" team on NGone! Accept here: {{url}} — Expires in 24hrs. -NGONE

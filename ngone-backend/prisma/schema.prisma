@@ -1,0 +1,548 @@
+// ─────────────────────────────────────────────────────────
+// NG😊NE — Complete Prisma Schema
+// ─────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Enums ────────────────────────────────────────────────
+
+enum Role {
+  VOLUNTEER
+  NGO_COORDINATOR
+  DONOR
+  ADMIN
+}
+
+enum AuthProvider {
+  EMAIL
+  PHONE
+  GOOGLE
+  MICROSOFT
+  APPLE
+}
+
+enum VolunteerLevel {
+  ROOKIE
+  RESPONDER
+  HERO
+  LEGEND
+}
+
+enum CrisisType {
+  FLOOD
+  FIRE
+  MEDICAL
+  FOOD_SHORTAGE
+  SHELTER
+  WATER_CRISIS
+  EARTHQUAKE
+  CYCLONE
+  DROUGHT
+}
+
+enum UrgencyLevel {
+  LOW
+  MODERATE
+  HIGH
+  CRITICAL
+  EXTREME
+}
+
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TeamInviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum DonationStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum DonationType {
+  ONE_TIME
+  MONTHLY
+  ANNUAL
+}
+
+enum ProgrammeType {
+  EDUCATION
+  HEALTHCARE
+  WOMEN_EMPOWERMENT
+  LIVELIHOOD
+  GRASSROOTS
+  DISASTER_RESPONSE
+}
+
+// ── Models ───────────────────────────────────────────────
+
+model User {
+  id                String       @id @default(cuid())
+  email             String?      @unique
+  phone             String?      @unique
+  passwordHash      String?      @map("password_hash")
+  name              String
+  avatarUrl         String?      @map("avatar_url")
+  role              Role         @default(VOLUNTEER)
+  provider          AuthProvider @default(EMAIL)
+  googleId          String?      @unique @map("google_id")
+  microsoftId       String?      @unique @map("microsoft_id")
+  isVerified        Boolean      @default(false) @map("is_verified")
+  isActive          Boolean      @default(true) @map("is_active")
+  city              String?
+  state             String?
+  country           String       @default("India")
+  bio               String?
+  lastLoginAt       DateTime?    @map("last_login_at")
+  failedLoginCount  Int          @default(0) @map("failed_login_count")
+  lockedUntil       DateTime?    @map("locked_until")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  volunteer      Volunteer?
+  ngo            NGO?
+  donor          Donor?
+  refreshTokens  RefreshToken[]
+  otpCodes       OTPCode[]
+  notifications  Notification[]
+  chatMessages   ChatMessage[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([role])
+  @@index([city, state])
+  @@map("users")
+}
+
+model RefreshToken {
+  id          String   @id @default(cuid())
+  token       String   @unique
+  userId      String   @map("user_id")
+  expiresAt   DateTime @map("expires_at")
+  revoked     Boolean  @default(false)
+  revokedAt   DateTime? @map("revoked_at")
+  ipAddress   String?   @map("ip_address")
+  userAgent   String?   @map("user_agent")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+model OTPCode {
+  id          String   @id @default(cuid())
+  userId      String?  @map("user_id")
+  phone       String?
+  email       String?
+  code        String
+  type        String   @default("login") // login, email_verify, phone_verify
+  attempts    Int      @default(0)
+  verified    Boolean  @default(false)
+  expiresAt   DateTime @map("expires_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([phone])
+  @@index([email])
+  @@map("otp_codes")
+}
+
+model Volunteer {
+  id              String         @id @default(cuid())
+  userId          String         @unique @map("user_id")
+  skills          String[]       @default([])
+  points          Int            @default(0)
+  level           VolunteerLevel @default(ROOKIE)
+  latitude        Float?
+  longitude       Float?
+  isOnline        Boolean        @default(false) @map("is_online")
+  isAvailable     Boolean        @default(true) @map("is_available")
+  hoursLogged     Float          @default(0) @map("hours_logged")
+  tasksCompleted  Int            @default(0) @map("tasks_completed")
+  availability    Json?          // { mon: ["09:00-17:00"], tue: [...] }
+  streak          Int            @default(0)
+  lastActiveAt    DateTime?      @map("last_active_at")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badges       VolunteerBadge[]
+  teamMembers  TeamMember[]
+  teamInvites  TeamInvite[]      @relation("InvitedVolunteer")
+  taskCheckIns TaskCheckIn[]
+
+  @@index([latitude, longitude])
+  @@index([skills])
+  @@index([points])
+  @@index([level])
+  @@index([isOnline])
+  @@map("volunteers")
+}
+
+model VolunteerBadge {
+  id          String   @id @default(cuid())
+  volunteerId String   @map("volunteer_id")
+  name        String   // "First Task", "10 Tasks", "50 Tasks", "Legend", "Crisis Hero"
+  description String?
+  icon        String?  // emoji or URL
+  awardedAt   DateTime @default(now()) @map("awarded_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  volunteer Volunteer @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+
+  @@unique([volunteerId, name])
+  @@map("volunteer_badges")
+}
+
+model NGO {
+  id                String   @id @default(cuid())
+  userId            String   @unique @map("user_id")
+  name              String
+  slug              String   @unique
+  description       String?
+  logoUrl           String?  @map("logo_url")
+  websiteUrl        String?  @map("website_url")
+  darpanId          String?  @unique @map("darpan_id")
+  isDarpanVerified  Boolean  @default(false) @map("is_darpan_verified")
+  registrationNo    String?  @map("registration_no")
+  pan               String?  // PAN number
+  cert80G           Boolean  @default(false) @map("cert_80g")
+  cert12A           Boolean  @default(false) @map("cert_12a")
+  fcraNumber        String?  @map("fcra_number")
+  address           String?
+  city              String?
+  state             String?
+  pincode           String?
+  latitude          Float?
+  longitude         Float?
+  phone             String?
+  email             String?
+  foundedYear       Int?     @map("founded_year")
+  focusAreas        String[] @default([]) @map("focus_areas")
+  impactScore       Float    @default(0) @map("impact_score")
+  totalFunds        Float    @default(0) @map("total_funds")
+  fundsUtilised     Float    @default(0) @map("funds_utilised")
+  beneficiaries     Int      @default(0)
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  crises      Crisis[]
+  programmes  Programme[]
+  donations   Donation[]
+  resources   Resource[]
+
+  @@index([state])
+  @@index([city])
+  @@index([impactScore])
+  @@index([slug])
+  @@map("ngos")
+}
+
+model Donor {
+  id              String   @id @default(cuid())
+  userId          String   @unique @map("user_id")
+  pan             String?  // PAN for 80G
+  totalDonated    Float    @default(0) @map("total_donated")
+  donationCount   Int      @default(0) @map("donation_count")
+  isAnonymous     Boolean  @default(false) @map("is_anonymous")
+  preferences     Json?    // { types: ["EDUCATION"], states: ["Delhi"] }
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  donations Donation[]
+
+  @@map("donors")
+}
+
+model Programme {
+  id              String        @id @default(cuid())
+  ngoId           String        @map("ngo_id")
+  title           String
+  slug            String        @unique
+  description     String?
+  type            ProgrammeType
+  coverImageUrl   String?       @map("cover_image_url")
+  startDate       DateTime?     @map("start_date")
+  endDate         DateTime?     @map("end_date")
+  targetAmount    Float?        @map("target_amount")
+  raisedAmount    Float         @default(0) @map("raised_amount")
+  beneficiaries   Int           @default(0)
+  location        String?
+  state           String?
+  isActive        Boolean       @default(true) @map("is_active")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  ngo NGO @relation(fields: [ngoId], references: [id], onDelete: Cascade)
+
+  @@index([ngoId])
+  @@index([type])
+  @@index([isActive])
+  @@map("programmes")
+}
+
+model Crisis {
+  id                String      @id @default(cuid())
+  ngoId             String      @map("ngo_id")
+  title             String
+  slug              String      @unique
+  description       String?
+  type              CrisisType
+  urgency           UrgencyLevel @default(HIGH)
+  status            TaskStatus  @default(OPEN)
+  latitude          Float
+  longitude         Float
+  location          String      // "Assam, India"
+  state             String?
+  district          String?
+  skillsRequired    String[]    @default([]) @map("skills_required")
+  volunteersNeeded  Int         @default(5) @map("volunteers_needed")
+  volunteersAssigned Int        @default(0) @map("volunteers_assigned")
+  imageUrls         String[]    @default([]) @map("image_urls")
+  estimatedAffected Int?        @map("estimated_affected")
+  resourcesNeeded   Json?       @map("resources_needed")
+  resolvedAt        DateTime?   @map("resolved_at")
+  isDeleted         Boolean     @default(false) @map("is_deleted")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+
+  ngo   NGO    @relation(fields: [ngoId], references: [id], onDelete: Cascade)
+  tasks Task[]
+
+  @@index([type])
+  @@index([urgency])
+  @@index([status])
+  @@index([latitude, longitude])
+  @@index([state])
+  @@index([isDeleted])
+  @@map("crises")
+}
+
+model Task {
+  id            String     @id @default(cuid())
+  crisisId      String     @map("crisis_id")
+  title         String
+  description   String?
+  status        TaskStatus @default(OPEN)
+  priority      Int        @default(1) // 1-5
+  dueDate       DateTime?  @map("due_date")
+  completedAt   DateTime?  @map("completed_at")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  crisis    Crisis        @relation(fields: [crisisId], references: [id], onDelete: Cascade)
+  teams     Team[]
+  checkIns  TaskCheckIn[]
+
+  @@index([crisisId])
+  @@index([status])
+  @@map("tasks")
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  taskId      String   @map("task_id")
+  name        String
+  leaderId    String   @map("leader_id")
+  maxSize     Int      @default(5) @map("max_size")
+  currentSize Int      @default(1) @map("current_size")
+  isOpen      Boolean  @default(true) @map("is_open")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  task         Task          @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  members      TeamMember[]
+  invites      TeamInvite[]
+  chatMessages ChatMessage[]
+
+  @@index([taskId])
+  @@index([leaderId])
+  @@index([isOpen])
+  @@map("teams")
+}
+
+model TeamMember {
+  id          String   @id @default(cuid())
+  teamId      String   @map("team_id")
+  volunteerId String   @map("volunteer_id")
+  role        String   @default("MEMBER") // LEADER, MEMBER
+  joinedAt    DateTime @default(now()) @map("joined_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  volunteer Volunteer @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, volunteerId])
+  @@map("team_members")
+}
+
+model TeamInvite {
+  id          String           @id @default(cuid())
+  teamId      String           @map("team_id")
+  volunteerId String           @map("volunteer_id")
+  senderId    String           @map("sender_id")
+  message     String?
+  status      TeamInviteStatus @default(PENDING)
+  expiresAt   DateTime         @map("expires_at")
+  respondedAt DateTime?        @map("responded_at")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  volunteer Volunteer @relation("InvitedVolunteer", fields: [volunteerId], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+  @@index([volunteerId])
+  @@index([status])
+  @@map("team_invites")
+}
+
+model TaskCheckIn {
+  id          String    @id @default(cuid())
+  taskId      String    @map("task_id")
+  volunteerId String    @map("volunteer_id")
+  checkInAt   DateTime  @default(now()) @map("check_in_at")
+  checkOutAt  DateTime? @map("check_out_at")
+  hoursLogged Float?    @map("hours_logged")
+  pointsEarned Int      @default(0) @map("points_earned")
+  notes       String?
+  latitude    Float?
+  longitude   Float?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  task      Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  volunteer Volunteer @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([volunteerId])
+  @@map("task_check_ins")
+}
+
+model Donation {
+  id                String         @id @default(cuid())
+  donorId           String         @map("donor_id")
+  ngoId             String         @map("ngo_id")
+  amount            Float
+  currency          String         @default("INR")
+  type              DonationType   @default(ONE_TIME)
+  status            DonationStatus @default(PENDING)
+  razorpayOrderId   String?        @unique @map("razorpay_order_id")
+  razorpayPaymentId String?        @unique @map("razorpay_payment_id")
+  razorpaySignature String?        @map("razorpay_signature")
+  receiptNo         String?        @unique @map("receipt_no")
+  receipt80GUrl     String?        @map("receipt_80g_url")
+  pan               String?
+  isAnonymous       Boolean        @default(false) @map("is_anonymous")
+  message           String?
+  refundedAt        DateTime?      @map("refunded_at")
+  completedAt       DateTime?      @map("completed_at")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+
+  donor Donor @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  ngo   NGO   @relation(fields: [ngoId], references: [id], onDelete: Cascade)
+
+  @@index([donorId])
+  @@index([ngoId])
+  @@index([status])
+  @@index([razorpayOrderId])
+  @@map("donations")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  type      String   // team_invite, crisis_alert, donation, checkin, system
+  title     String
+  body      String
+  data      Json?    // { crisisId, teamId, etc. }
+  isRead    Boolean  @default(false) @map("is_read")
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model ChatMessage {
+  id        String    @id @default(cuid())
+  teamId    String    @map("team_id")
+  senderId  String    @map("sender_id")
+  content   String
+  type      String    @default("text") // text, image, file, system
+  fileUrl   String?   @map("file_url")
+  fileName  String?   @map("file_name")
+  isEdited  Boolean   @default(false) @map("is_edited")
+  isDeleted Boolean   @default(false) @map("is_deleted")
+  editedAt  DateTime? @map("edited_at")
+  readBy    String[]  @default([]) @map("read_by") // array of userIds
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  sender User @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([teamId, createdAt])
+  @@index([senderId])
+  @@map("chat_messages")
+}
+
+model Resource {
+  id            String   @id @default(cuid())
+  ngoId         String   @map("ngo_id")
+  name          String
+  category      String   // food, medical, shelter, water, clothing, equipment
+  quantity       Int      @default(0)
+  unit          String   @default("units") // kg, liters, units, packs
+  allocated     Int      @default(0)
+  available     Int      @default(0)
+  location      String?
+  latitude      Float?
+  longitude     Float?
+  description   String?
+  expiresAt     DateTime? @map("expires_at")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  ngo NGO @relation(fields: [ngoId], references: [id], onDelete: Cascade)
+
+  @@index([ngoId])
+  @@index([category])
+  @@index([isActive])
+  @@map("resources")
+}

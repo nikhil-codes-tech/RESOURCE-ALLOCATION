@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Invitation</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f7;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f4f4f7;">
+    <tr>
+      <td align="center" style="padding:40px 0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#FF6B35,#FF8F5E);padding:32px 40px;text-align:center;">
+              <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:700;">NG😊NE</h1>
+              <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:13px;">TEAM INVITATION</p>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px;">
+              <h2 style="margin:0 0 16px;color:#1a1a2e;font-size:22px;">Hey {{inviteeName}}! 👋</h2>
+              <p style="margin:0 0 20px;color:#4a4a68;font-size:16px;line-height:1.6;">
+                <strong>{{senderName}}</strong> has invited you to join a volunteer team!
+              </p>
+              <!-- Task Info -->
+              <div style="background-color:#FFF5F0;border-radius:12px;padding:24px;margin:0 0 24px;border-left:4px solid #FF6B35;">
+                <p style="margin:0 0 4px;color:#9b9bb4;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Task</p>
+                <p style="margin:0 0 12px;color:#1a1a2e;font-size:18px;font-weight:600;">{{taskName}}</p>
+                <p style="margin:0;color:#4a4a68;font-size:14px;">
+                  Join forces with other volunteers and make an impact together. This invite expires in 24 hours.
+                </p>
+              </div>
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto;">
+                <tr>
+                  <td style="background:linear-gradient(135deg,#FF6B35,#FF8F5E);border-radius:8px;margin-right:12px;">
+                    <a href="{{acceptUrl}}" style="display:inline-block;padding:14px 36px;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;">Accept Invitation ✓</a>
+                  </td>
+                  <td style="width:12px;"></td>
+                  <td style="background-color:#e5e5e5;border-radius:8px;">
+                    <a href="{{declineUrl}}" style="display:inline-block;padding:14px 36px;color:#4a4a68;text-decoration:none;font-weight:600;font-size:15px;">Decline</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 40px;background-color:#f8f8fa;border-top:1px solid #eee;">
+              <p style="margin:0 0 8px;color:#9b9bb4;font-size:12px;text-align:center;">
+                NG😊NE Foundation | DARPAN ID: UP/2024/0123456 | 80G & 12A Certified
+              </p>
+              <p style="margin:0;color:#9b9bb4;font-size:11px;text-align:center;">
+                <a href="{{clientUrl}}/unsubscribe" style="color:#FF6B35;text-decoration:underline;">Unsubscribe</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donation Receipt</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f7;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f4f4f7;">
+    <tr>
+      <td align="center" style="padding:40px 0;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#FF6B35,#FF8F5E);padding:32px 40px;text-align:center;">
+              <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:700;">NG😊NE</h1>
+              <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:13px;">DONATION RECEIPT</p>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px;">
+              <h2 style="margin:0 0 8px;color:#1a1a2e;font-size:22px;">Thank you, {{name}}! 🙏</h2>
+              <p style="margin:0 0 24px;color:#4a4a68;font-size:16px;line-height:1.6;">
+                Your generous contribution is helping communities across India. Here are your donation details:
+              </p>
+              <!-- Donation Details -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#FFF5F0;border-radius:12px;overflow:hidden;margin:0 0 24px;">
+                <tr>
+                  <td style="padding:20px 24px;border-bottom:1px solid #FFE0D0;">
+                    <p style="margin:0;color:#9b9bb4;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Amount</p>
+                    <p style="margin:4px 0 0;color:#FF6B35;font-size:28px;font-weight:700;">₹{{amount}}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 24px;border-bottom:1px solid #FFE0D0;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="color:#9b9bb4;font-size:13px;">NGO</td>
+                        <td align="right" style="color:#1a1a2e;font-size:14px;font-weight:600;">{{ngoName}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 24px;border-bottom:1px solid #FFE0D0;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="color:#9b9bb4;font-size:13px;">Transaction ID</td>
+                        <td align="right" style="color:#1a1a2e;font-size:14px;font-family:'Courier New',monospace;">{{transactionId}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:16px 24px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="color:#9b9bb4;font-size:13px;">Date</td>
+                        <td align="right" style="color:#1a1a2e;font-size:14px;">{{date}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 16px;color:#4a4a68;font-size:14px;line-height:1.6;">
+                Your 80G tax receipt will be sent separately within 24 hours. Please retain this email for your records.
+              </p>
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto;">
+                <tr>
+                  <td style="background:linear-gradient(135deg,#FF6B35,#FF8F5E);border-radius:8px;">
+                    <a href="{{clientUrl}}/dashboard/donations" style="display:inline-block;padding:12px 32px;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;">View Donation History</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 40px;background-color:#f8f8fa;border-top:1px solid #eee;">
+              <p style="margin:0 0 8px;color:#9b9bb4;font-size:12px;text-align:center;">
+                NG😊NE Foundation | DARPAN ID: UP/2024/0123456 | 80G & 12A Certified
+              </p>
+              <p style="margin:0;color:#9b9bb4;font-size:11px;text-align:center;">
+                <a href="{{clientUrl}}/unsubscribe" style="color:#FF6B35;text-decoration:underline;">Unsubscribe</a> · 
+                <a href="{{clientUrl}}/privacy" style="color:#FF6B35;text-decoration:underline;">Privacy Policy</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
