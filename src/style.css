@@ -340,6 +340,121 @@ img[src] { opacity: 1; }
   border: 2px solid var(--saffron); animation: ripple 2s infinite;
 }
 
+/* ═══ ROLE CARDS ═══ */
+.role-cards-container { display: flex; gap: 16px; margin-bottom: 28px; }
+.role-card {
+  flex: 1; padding: 24px 20px; border-radius: 20px; text-align: center; cursor: pointer;
+  border: 2.5px solid var(--border); background: var(--white); transition: all 0.3s var(--transition);
+  position: relative; overflow: hidden;
+}
+.role-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.role-card .rc-check {
+  position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 14px; color: #fff;
+  opacity: 0; transform: scale(0.5); transition: all 0.3s var(--transition);
+}
+.role-card.selected .rc-check { opacity: 1; transform: scale(1); }
+.role-card .rc-icon { font-size: 52px; margin-bottom: 10px; line-height: 1; }
+.role-card .rc-title { font-weight: 800; font-size: 16px; margin-bottom: 4px; }
+.role-card .rc-sub { font-size: 12px; color: var(--sub); line-height: 1.5; margin-bottom: 6px; }
+.role-card .rc-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+/* ═══ NEED CARDS ═══ */
+.need-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.need-card {
+  padding: 24px 18px; border-radius: 20px; text-align: center; cursor: pointer;
+  border: 1.5px solid var(--border); background: var(--white); transition: all 0.3s var(--transition);
+}
+.need-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+.need-card .nc-icon { font-size: 40px; margin-bottom: 8px; }
+.need-card .nc-label { font-weight: 800; font-size: 15px; margin-bottom: 4px; }
+.need-card .nc-sub { font-size: 12px; color: var(--sub); line-height: 1.5; }
+.need-card.emergency { border: 2px solid #EF4444; animation: pulseEmergency 2s infinite; }
+@keyframes pulseEmergency { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.3); } 50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); } }
+
+/* ═══ RESOURCE TABLE ═══ */
+.res-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; }
+.res-table th { text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.res-table td { padding: 14px; background: var(--white); font-size: 14px; }
+.res-table tr td:first-child { border-radius: 12px 0 0 12px; }
+.res-table tr td:last-child { border-radius: 0 12px 12px 0; }
+.res-table tr { transition: all 0.2s; }
+.res-table tr:hover td { background: var(--saffron-lt); }
+.status-pill { padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+
+/* ═══ DONATION CARD ═══ */
+.donation-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 22px; box-shadow: var(--shadow-sm); transition: all 0.3s var(--transition);
+}
+.donation-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
+.drive-badge { padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 700; }
+.drive-badge.live { background: #DCFCE7; color: #16A34A; }
+.drive-badge.upcoming { background: #FEF9C3; color: #CA8A04; }
+.drive-badge.urgent { background: #FEE2E2; color: #DC2626; }
+.drive-badge.closed { background: #F1F0ED; color: #94A3B8; }
+
+/* ═══ MAP GRID ═══ */
+.map-grid {
+  position: relative; background: linear-gradient(135deg, #E8F5EE 0%, #F0F7F4 50%, #E8F0E5 100%);
+  border-radius: 20px; min-height: 320px; border: 1px solid var(--border); overflow: hidden;
+}
+.map-pin {
+  position: absolute; width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  cursor: pointer; transition: all 0.3s; z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.map-pin:hover { transform: scale(1.3); z-index: 10; }
+.map-pin.live::after {
+  content: ''; position: absolute; inset: -4px; border-radius: 50%;
+  border: 2px solid currentColor; animation: ripple 2s infinite;
+}
+.map-popup {
+  position: absolute; background: var(--white); border-radius: 16px; padding: 18px;
+  box-shadow: var(--shadow-lg); z-index: 20; width: 280px;
+  animation: scaleIn 0.25s var(--transition);
+}
+
+/* ═══ EMERGENCY STRIP ═══ */
+.emergency-strip {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
+  background: linear-gradient(90deg, #FF6B35, #E55A25); color: #fff;
+  padding: 12px 24px; display: flex; align-items: center; justify-content: center; gap: 16px;
+  font-weight: 600; font-size: 14px; box-shadow: 0 -4px 20px rgba(255,107,53,0.3);
+  animation: fadeUp 0.4s var(--transition);
+}
+.emergency-strip button { background: rgba(255,255,255,0.2); color: #fff; padding: 8px 20px; border-radius: 10px; font-weight: 700; font-size: 13px; backdrop-filter: blur(8px); }
+.emergency-strip button:hover { background: rgba(255,255,255,0.35); }
+
+/* ═══ FILTER PILLS ═══ */
+.filter-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.filter-pill {
+  padding: 8px 18px; border-radius: 99px; font-size: 13px; font-weight: 600;
+  border: 1.5px solid var(--border); background: var(--white); color: var(--sub);
+  cursor: pointer; transition: all 0.22s var(--transition);
+}
+.filter-pill:hover { border-color: var(--saffron); color: var(--saffron); }
+.filter-pill.active { background: var(--saffron); color: #fff; border-color: var(--saffron); }
+
+/* ═══ SCROLL ROW ═══ */
+.scroll-row { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 12px; scroll-snap-type: x mandatory; }
+.scroll-row::-webkit-scrollbar { height: 4px; }
+.scroll-row > * { scroll-snap-align: start; flex-shrink: 0; width: 280px; }
+
+/* ═══ INVENTORY CARD ═══ */
+.inv-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 16px;
+  padding: 18px; transition: all 0.3s var(--transition);
+}
+.inv-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+
+/* ═══ REQUEST CARD ═══ */
+.req-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 22px; transition: all 0.3s var(--transition);
+}
+.req-card:hover { box-shadow: var(--shadow-md); }
+
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 768px) {
   .ng-links { display: none !important; }
@@ -356,6 +471,9 @@ img[src] { opacity: 1; }
   .test-grid { grid-template-columns: 1fr !important; }
   .why-grid { grid-template-columns: 1fr 1fr !important; }
   .section-head h2 { font-size: 28px; }
+  .role-cards-container { flex-direction: column; }
+  .need-grid { grid-template-columns: 1fr 1fr !important; }
+  .help-cols { grid-template-columns: 1fr !important; }
 }
 
 @media (max-width: 480px) {
@@ -365,4 +483,6 @@ img[src] { opacity: 1; }
   .hero-stats { flex-direction: column !important; gap: 12px !important; }
   .why-grid { grid-template-columns: 1fr !important; }
   .section-head h2 { font-size: 24px; }
+  .need-grid { grid-template-columns: 1fr !important; }
+  .role-cards-container { gap: 12px; }
 }

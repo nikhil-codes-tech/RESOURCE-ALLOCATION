@@ -2,6 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import './style.css';
 import api from './api/client.js';
 import { connectSocket, disconnectSocket } from './socket/index.js';
+import BeneficiaryDashboard from './components/BeneficiaryDashboard.jsx';
+import NearbyDonations from './components/NearbyDonations.jsx';
+import NgoResources from './components/NgoResources.jsx';
+import { ActiveDrivesSection, NeedHelpSection } from './components/HomepageAdditions.jsx';
 
 /* ═══════════════════ API HELPER ═══════════════════ */
 // Axios-powered wrapper — same interface as before so all components work unchanged.
@@ -200,7 +204,7 @@ export default function App() {
   const login = (role, name, user) => {
     setUserRole(role || 'volunteer'); setUserName(name || 'Kajal Sharma'); setCurrentUser(user || null);
     setLoggedIn(true);
-    setPage('dashboard');
+    setPage(role === 'beneficiary' ? 'beneficiary' : 'dashboard');
     setPageKey(k => k + 1);
     window.scrollTo({ top: 0, behavior: 'instant' });
     showToastMsg(`Welcome, ${(name || 'Kajal').split(' ')[0]}! \u2705`);
@@ -223,7 +227,7 @@ export default function App() {
   /* ═══ NAVBAR ═══ */
   const Nav = () => {
     const links = loggedIn
-      ? [{ l: 'Home', p: 'home' }, { l: 'Dashboard', p: 'dashboard' }, { l: 'Donate', p: 'donate' }]
+      ? [{ l: 'Home', p: 'home' }, { l: 'Dashboard', p: userRole === 'beneficiary' ? 'beneficiary' : 'dashboard' }, { l: 'Donate', p: 'donate' }]
       : [{ l: 'Home', p: 'home' }, { l: 'Programmes', p: 'home' }, { l: 'Impact', p: 'home' }, { l: 'About', p: 'home' }, { l: 'Donate', p: 'donate' }];
     return (
       <>
@@ -505,6 +509,9 @@ export default function App() {
           </div>
         </section>
 
+        {/* ACTIVE DONATION DRIVES */}
+        <ActiveDrivesSection onNav={nav} />
+
         {/* IMPACT PHOTO WALL */}
         <section style={{ padding: '80px 24px', borderTop: '1px solid var(--border)' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -566,6 +573,9 @@ export default function App() {
             </div>
           </div>
         </section>
+
+        {/* NEED HELP SECTION */}
+        <NeedHelpSection onNav={nav} />
 
         {/* ABOUT */}
         <section style={{ borderTop: '1px solid var(--border)', padding: '72px 24px' }}>
@@ -731,10 +741,9 @@ export default function App() {
     };
 
     const roles = [
-      { k: 'volunteer', e: '\uD83D\uDE4B', l: 'Volunteer', c: 'var(--saffron)' },
-      { k: 'ngo', e: '\uD83C\uDFE2', l: 'NGO Coordinator', c: 'var(--green)' },
-      { k: 'donor', e: '\uD83D\uDC9B', l: 'Donor', c: 'var(--gold)' },
-      { k: 'admin', e: '\uD83D\uDC51', l: 'Admin', c: '#8B5CF6' },
+      { k: 'beneficiary', e: '\uD83D\uDE4F', l: 'I Need Help', c: '#FF6B35', sub: 'Request food, clothing, shelter or emergency assistance', desc: 'For individuals and families facing crisis, poverty, or disaster who need immediate support', selBg: '#FFF3EE' },
+      { k: 'volunteer', e: '\uD83D\uDE4B', l: 'I Want to Volunteer', c: '#2D8653', sub: 'Donate time, skills, and effort to help communities', desc: 'For individuals who want to contribute skills, time, and energy to NGO missions', selBg: '#EAF5EF' },
+      { k: 'ngo', e: '\uD83C\uDFE2', l: 'NGO Coordinator', c: '#F5A623', sub: 'Manage volunteers, resources, donations and crisis response', desc: 'For registered NGOs with DARPAN ID managing field operations and community programmes', selBg: '#FEF6E4' },
     ];
 
     return (
@@ -790,11 +799,14 @@ export default function App() {
                   </div>
                 ) : showRole ? (
                   <>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 28 }}>
-                      {roles.map(r => (
-                        <div key={r.k} onClick={() => setRole(r.k)} style={{ padding: '22px 14px', borderRadius: 18, textAlign: 'center', cursor: 'pointer', border: `2.5px solid ${role === r.k ? r.c : 'var(--border)'}`, background: role === r.k ? `${r.c}08` : 'var(--white)', transition: 'all 0.25s', transform: role === r.k ? 'scale(1.02)' : '' }}>
-                          <div style={{ fontSize: 36, marginBottom: 8 }}>{r.e}</div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: role === r.k ? r.c : 'var(--sub)' }}>{r.l}</div>
+                    <div className="role-cards-container">
+                      {roles.map((r, ri) => (
+                        <div key={r.k} className={`role-card${role === r.k ? ' selected' : ''}`} onClick={() => setRole(r.k)} style={{ border: `3px solid ${role === r.k ? r.c : 'var(--border)'}`, background: role === r.k ? r.selBg : 'var(--white)', animation: `fadeUp 0.4s ${ri * 100}ms cubic-bezier(0.22,1,0.36,1) both` }}>
+                          <div className="rc-check" style={{ background: r.c }}>✓</div>
+                          <div className="rc-icon">{r.e}</div>
+                          <div className="rc-title" style={{ color: role === r.k ? r.c : 'var(--text)' }}>{r.l}</div>
+                          <div className="rc-sub">{r.sub}</div>
+                          <div className="rc-desc">{r.desc}</div>
                         </div>
                       ))}
                     </div>
@@ -991,7 +1003,7 @@ export default function App() {
         </div>
 
         <div className="ng-tabs">
-          {[{ k: 'tasks', l: '\uD83D\uDCCD My Tasks' }, { k: 'team', l: '\uD83D\uDC65 Team Connect' }, { k: 'board', l: '\uD83D\uDCCB Open Teams' }].map(t => <button key={t.k} className={`ng-tab${tab === t.k ? ' active' : ''}`} onClick={() => setTab(t.k)}>{t.l}</button>)}
+          {[{ k: 'tasks', l: '\uD83D\uDCCD My Tasks' }, { k: 'team', l: '\uD83D\uDC65 Team Connect' }, { k: 'board', l: '\uD83D\uDCCB Open Teams' }, { k: 'nearby', l: '\uD83C\uDF71\uD83D\uDC55 Nearby Donations' }, ...(userRole === 'ngo' ? [{ k: 'resources', l: '\uD83D\uDCE6 Resources' }] : [])].map(t => <button key={t.k} className={`ng-tab${tab === t.k ? ' active' : ''}`} onClick={() => setTab(t.k)}>{t.l}</button>)}
         </div>
 
         {/* TASKS TAB */}
@@ -1153,7 +1165,6 @@ export default function App() {
                         </div>
                         <button className={isMember ? 'btn-green' : isFull ? 'btn-outline' : 'btn-saffron'} disabled={isMember || isFull} onClick={() => handleJoinTeam(t.id)} style={{ padding: '10px 24px', fontSize: 13 }}>{isMember ? '\u2713 Joined' : isFull ? 'Full' : 'Join Team'}</button>
                       </div>
-                      {/* Team members list */}
                       {(t.members || []).length > 0 && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 14, borderTop: '1px solid var(--border-lt)', flexWrap: 'wrap' }}>
                           <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600, marginRight: 4 }}>{'\uD83D\uDC65'} Members:</span>
@@ -1172,6 +1183,16 @@ export default function App() {
               })}
             </div>
           </div>
+        )}
+
+        {/* NEARBY DONATIONS TAB */}
+        {tab === 'nearby' && (
+          <NearbyDonations userRole={userRole} showToastMsg={showToastMsg} userName={userName} />
+        )}
+
+        {/* NGO RESOURCES TAB */}
+        {tab === 'resources' && userRole === 'ngo' && (
+          <NgoResources showToastMsg={showToastMsg} />
         )}
       </div>
     );
@@ -1441,8 +1462,11 @@ export default function App() {
     );
   };
 
+  /* ═══════ BENEFICIARY PAGE WRAPPER ═══════ */
+  const BeneficiaryPage = () => <BeneficiaryDashboard userName={userName} showToastMsg={showToastMsg} setShowChat={setShowChat} />;
+
   /* ═══════ RENDER ═══════ */
-  const pages = { home: Home, login: Login, dashboard: Dashboard, programme: ProgDetail, darpan: DarpanPage, donate: Donate };
+  const pages = { home: Home, login: Login, dashboard: Dashboard, programme: ProgDetail, darpan: DarpanPage, donate: Donate, beneficiary: BeneficiaryPage };
   const Page = pages[page] || Home;
 
   return (
